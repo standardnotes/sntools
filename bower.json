@@ -1,0 +1,22 @@
+{
+  "name": "sn-tools",
+  "description": "A handful of tools to convert between Standard Note files and other file formats.",
+  "main": "sntools.js",
+  "keywords": [
+    "standard",
+    "notes",
+    "evernote"
+  ],
+  "authors": [
+    "Standard Notes"
+  ],
+  "license": "MIT",
+  "homepage": "https://standardnotes.org",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
