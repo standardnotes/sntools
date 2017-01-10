@@ -10,6 +10,9 @@
   "authors": [
     "Standard Notes"
   ],
+  "dependencies": {
+    "moment" : "2.17.1"
+  },
   "license": "MIT",
   "homepage": "https://standardnotes.org",
   "ignore": [

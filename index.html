@@ -1,5 +1,25 @@
-<html>
+<html style="background-color: black;">
 <head>
-  <script src="sntools.js"></script>
+  <script src="dist/sntools.min.js"></script>
 </head>
+
+<input type="file" id="files" name="files[]" multiple />
+
+<script>
+
+  function handleFileSelect(evt) {
+      var file = evt.target.files[0];
+      var reader = new FileReader();
+
+      reader.onload = function(e) {
+        var data = e.target.result;
+        var result = SNTools.convertENEXDatatoSN(data);
+        SNTools.downloadSNData(result, "result.txt");
+      }.bind(this)
+
+      reader.readAsText(file);
+  }
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+</script>
 </html>
