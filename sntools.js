@@ -63,42 +63,38 @@
     link.click();
   }
 
-  SNTools.convertENEXFiletoSN = function(file) {
-    var reader = new FileReader();
+  SNTools.convertENEXDatatoSN = function(data) {
+    var xmlDoc = loadXMLString(data);
+    console.log(xmlDoc);
+    var xmlNotes = xmlDoc.getElementsByTagName("note");
+    var notes = [];
 
-    reader.onload = function(){
-      var data = e.target.result
-      var xmlDoc = loadXMLString(data);
-      var xmlNotes = xmlDoc.getElementsByTagName("note");
-      var notes = [];
+    xmlNotes.forEach(function(xmlNote){
+      var title = xmlNote.getElementsByTagName("title")[0].childNodes[0].nodeValue;
+      var created = xmlNote.getElementsByTagName("created")[0].childNodes[0].nodeValue;
+      var updated = xmlNote.getElementsByTagName("updated")[0].childNodes[0].nodeValue;
 
-      for(var xmlNote of xmlNotes) {
-        var title = xmlNote.getElementsByTagName("title")[0].childNodes[0].nodeValue;
-        var created = xmlNote.getElementsByTagName("created")[0].childNodes[0].nodeValue;
-        var updated = xmlNote.getElementsByTagName("updated")[0].childNodes[0].nodeValue;
+      var contentXml = loadXMLString(xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue);
+      var text = strip(contentXml.getElementsByTagName("en-note")[0].innerHTML);
 
-        var contentXml = loadXMLString(xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue);
-        var text = strip(contentXml.getElementsByTagName("en-note")[0].innerHTML);
+      var note = {
+        created_at: moment(created).toDate(),
+        updated_at: moment(updated).toDate(),
+        content_type: "Note",
+        content: {
+          title: title,
+          text: text,
+        }
+      };
 
-        var note = {
-          created_at: moment(created).toDate(),
-          updated_at: moment(updated).toDate(),
-          content_type: "Note",
-          content: {
-            title: title,
-            text: text,
-          }
-        };
-        notes.push(note);
-      }
+      notes.push(note);
+    })
 
-      var data = {
-        items: notes
-      }
-
-      return data;
+    var itemsData = {
+      items: notes
     }
-    reader.readAsText(file);
+
+    return itemsData
   }
 
   return SNTools
