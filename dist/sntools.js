@@ -46,11 +46,11 @@ var SNTools = function () {
     }
   }, {
     key: 'loadXMLString',
-    value: function loadXMLString(string) {
+    value: function loadXMLString(string, type) {
       var xmlDoc;
       if (window.DOMParser) {
         var parser = new DOMParser();
-        xmlDoc = parser.parseFromString(string, "text/xml");
+        xmlDoc = parser.parseFromString(string, "text/" + type);
       } else {
         // Internet Explorer
         xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
@@ -89,7 +89,7 @@ var SNTools = function () {
   }, {
     key: 'convertENEXDatatoSN',
     value: function convertENEXDatatoSN(data) {
-      var xmlDoc = this.loadXMLString(data);
+      var xmlDoc = this.loadXMLString(data, "xml");
       var xmlNotes = xmlDoc.getElementsByTagName("note");
       var notes = [];
       var tags = [];
@@ -114,14 +114,17 @@ var SNTools = function () {
 
           var title = xmlNote.getElementsByTagName("title")[0].childNodes[0].nodeValue;
           var created = xmlNote.getElementsByTagName("created")[0].childNodes[0].nodeValue;
-          var updated = xmlNote.getElementsByTagName("updated")[0].childNodes[0].nodeValue;
+          var updatedNodes = xmlNote.getElementsByTagName("updated");
+          var updated = updatedNodes.length ? updatedNodes[0].childNodes[0].nodeValue : null;
 
-          var contentXml = this.loadXMLString(xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue);
-          var text = this.strip(contentXml.getElementsByTagName("en-note")[0].innerHTML);
+          var contentXmlString = xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue;
+          var contentXml = this.loadXMLString(contentXmlString, "html");
+          var contentHTML = contentXml.getElementsByTagName("en-note")[0].innerHTML;
+          var text = this.strip(contentHTML);
 
           var note = {
             created_at: moment(created).toDate(),
-            updated_at: moment(updated).toDate(),
+            updated_at: updated ? moment(updated).toDate() : null,
             uuid: this.generateUUID(),
             content_type: "Note",
             content: {
