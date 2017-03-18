@@ -200,6 +200,44 @@ var SNTools = function () {
 
       return itemsData;
     }
+  }, {
+    key: 'convertPlaintextFiles',
+    value: function convertPlaintextFiles(files, completion) {
+      var index = 0;
+      var processedData = [];
+
+      var readNext = function () {
+        var file = files[index];
+        index++;
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+
+          var data = e.target.result;
+          var note = {
+            created_at: new Date(),
+            updated_at: new Date(),
+            uuid: this.generateUUID(),
+            content_type: "Note",
+            content: {
+              title: file.name.split(".")[0],
+              text: data,
+              references: []
+            }
+          };
+          processedData.push(note);
+
+          if (index < files.length) {
+            readNext();
+          } else {
+            completion({ items: processedData });
+          }
+        }.bind(this);
+        reader.readAsText(file);
+      }.bind(this);
+
+      readNext();
+    }
   }]);
 
   return SNTools;
