@@ -1,6 +1,7 @@
 To run locally:
 
-1. Clone the project
-2. run `npm install`
-2. run `grunt`
-3. Open index.html to test.
+0. Clone the project
+0. run `npm install`
+0. run `bower install`
+0. run `grunt`
+0. Open index.html to test.
