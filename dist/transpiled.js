@@ -122,6 +122,7 @@ var SNTools = function () {
           var contentXmlString = xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue;
           var contentXml = this.loadXMLString(contentXmlString, "html");
           var contentHTML = contentXml.getElementsByTagName("en-note")[0].innerHTML;
+          contentHTML = contentHTML.replace(/<br[^>]*>/g, "\n\n");
           var text = this.strip(contentHTML);
 
           var note = {
