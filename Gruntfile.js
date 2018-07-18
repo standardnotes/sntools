@@ -42,7 +42,7 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'dist/transpiled.js',
-          'bower_components/moment/min/moment.min.js'
+          'node_modules/moment/min/moment.min.js'
         ],
         dest: 'dist/sntools.js',
       },
