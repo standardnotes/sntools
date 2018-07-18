@@ -91,7 +91,8 @@ var SNTools = function () {
   }, {
     key: 'convertENEXDatatoSN',
     value: function convertENEXDatatoSN(data) {
-      var defaultTagName = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "evernote";
+      var stripHTML = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+      var defaultTagName = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "evernote";
 
       var xmlDoc = this.loadXMLString(data, "xml");
       var xmlNotes = xmlDoc.getElementsByTagName("note");
@@ -137,7 +138,7 @@ var SNTools = function () {
           var contentXml = this.loadXMLString(contentXmlString, "html");
           var contentHTML = contentXml.getElementsByTagName("en-note")[0].innerHTML;
           contentHTML = contentHTML.replace(/<br[^>]*>/g, "\n\n");
-          var text = this.strip(contentHTML);
+          var text = stripHTML ? this.strip(contentHTML) : contentHTML;
 
           var note = {
             created_at: moment(created).toDate(),

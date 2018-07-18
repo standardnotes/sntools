@@ -17,7 +17,8 @@ Plaintext:
 
     reader.onload = function(e) {
       var data = e.target.result;
-      var result = SNTools.convertENEXDatatoSN(data);
+      var stripHTML = true;
+      var result = SNTools.convertENEXDatatoSN(data, stripHTML);
       SNTools.downloadSNData(result, "result.txt");
     }.bind(this)
 
