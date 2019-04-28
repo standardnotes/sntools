@@ -1,4 +1,5 @@
 <html style="background-color: black; color: white;">
+
 <head>
   <script src="dist/sntools.js"></script>
 </head>
@@ -6,16 +7,18 @@
 Evernote:
 <input type="file" id="evernote" name="files[]" multiple />
 
+Google Keep from Google Takeout archive:
+<input type="file" id="keep" name="files[]" multiple />
+
 Plaintext:
 <input type="file" id="plaintext" name="files[]" multiple />
 
 <script>
-
   function handleEvernoteSelect(evt) {
     var file = evt.target.files[0];
     var reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       var data = e.target.result;
       var stripHTML = true;
       var result = SNTools.convertENEXDatatoSN(data, stripHTML);
@@ -25,15 +28,52 @@ Plaintext:
     reader.readAsText(file);
   }
 
+  function handleKeepSelect(evt) {
+    var files = evt.target.files;
+    var reader = new FileReader();
+
+    // Raw notes from Google Keep files
+    var notes = [];
+
+    // Read files one by one
+    for (let i = 0, f; f = files[i]; i++) {
+      var r = new FileReader();
+      r.onload = (function (f) {
+        return function (e) {
+          const content = e.target.result;
+
+          // Add note to notes array
+          notes.push({
+            content,
+            name: f.name.replace(/\.html$/, '')
+          });
+        };
+      })(f);
+
+      r.readAsText(f);
+    }
+
+    // Wait for loading of note files to complete
+    var fileLoading = setInterval(() => {
+      if (notes.length >= files.length) {
+        // All files have been read, convert
+        clearInterval(fileLoading);
+        var result = SNTools.convertGKeepNotes(notes);
+        SNTools.downloadSNData(result, "standardnotes-archive.json");
+      }
+    }, 0)
+  }
+
   function handlePlaintextSelect(evt) {
     var files = evt.target.files;
-    SNTools.convertPlaintextFiles(files, function(data){
+    SNTools.convertPlaintextFiles(files, function (data) {
       SNTools.downloadSNData(data, "sn-import-file.txt");
     })
   }
 
   document.getElementById('evernote').addEventListener('change', handleEvernoteSelect, false);
+  document.getElementById('keep').addEventListener('change', handleKeepSelect, false);
   document.getElementById('plaintext').addEventListener('change', handlePlaintextSelect, false);
-
 </script>
+
 </html>

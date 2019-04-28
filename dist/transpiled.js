@@ -231,6 +231,108 @@ var SNTools = function () {
       return itemsData;
     }
   }, {
+    key: 'convertGKeepNotes',
+    value: function convertGKeepNotes(rawNotes) {
+      // Final notes array
+      var notes = [];
+
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = rawNotes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var note = _step3.value;
+
+          // Parse note html
+          var el = document.createElement('html');
+          el.innerHTML = note.content;
+
+          // Try to get note content
+          var content = void 0;
+          try {
+            var contentElement = el.getElementsByClassName('content')[0];
+
+            // Replace <br> with \n so line breaks get recognised
+            contentElement.innerHTML = contentElement.innerHTML.replace(/<br>/g, "\n");
+
+            // Get note content, removing newline from todo lists
+            content = contentElement.innerText.replace(/☐\n/g, '☐').replace(/☑\n/g, '☑');
+          } catch (e) {
+            // Invalid note, continue
+            console.log(note.name, "is an invalid note (no content)");
+            continue;
+          }
+
+          // Try to get note title
+          var title = void 0;
+          try {
+            title = el.getElementsByTagName('title')[0].innerText;
+          } catch (e) {
+            // Invalid note, continue
+            console.log(note.name, "is an invalid note (no title)");
+            continue;
+          }
+
+          // Check if title is date (default if no title is set). If so, use empty string
+          if (title !== '' && !isNaN(new Date(title))) {
+            title = '';
+          }
+
+          // Try to find creation date, usually before div.content or div.title
+          var date = this.getDateFromGKeepNote(true, note.content) || this.getDateFromGKeepNote(false, note.content) || new Date();
+
+          notes.push({
+            created_at: date,
+            updated_at: date,
+            uuid: this.generateUUID(),
+            content_type: 'Note',
+            content: {
+              title: title,
+              text: content,
+              references: []
+            }
+          });
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+
+      return {
+        "items": notes
+      };
+    }
+  }, {
+    key: 'getDateFromGKeepNote',
+    value: function getDateFromGKeepNote(withTitle, note) {
+      var regex = void 0;
+      if (withTitle) {
+        regex = /.*(?=<\/div>\n<div class="title">)/;
+      } else {
+        regex = /.*(?=<\/div>\n\n<div class="content">)/;
+      }
+      var dateString = regex.exec(note);
+      // Check if string exists at all
+      if (dateString && dateString[0]) {
+        // Check if string is valid date
+        if (!isNaN(new Date(dateString))) {
+          return new Date(dateString);
+        }
+      }
+      return false;
+    }
+  }, {
     key: 'convertPlaintextFiles',
     value: function convertPlaintextFiles(files, completion) {
       var index = 0;
