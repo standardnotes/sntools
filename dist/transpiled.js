@@ -233,6 +233,8 @@ var SNTools = function () {
   }, {
     key: 'convertGKeepNotes',
     value: function convertGKeepNotes(rawNotes) {
+      var stripHTML = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
       // Final notes array
       var notes = [];
 
@@ -257,7 +259,11 @@ var SNTools = function () {
             contentElement.innerHTML = contentElement.innerHTML.replace(/<br>/g, "\n");
 
             // Get note content, removing newline from todo lists
-            content = contentElement.innerText.replace(/☐\n/g, '☐').replace(/☑\n/g, '☑');
+            if (stripHTML) {
+              content = contentElement.innerText.replace(/☐\n/g, '☐').replace(/☑\n/g, '☑');
+            } else {
+              content = contentElement.innerHTML;
+            }
           } catch (e) {
             // Invalid note, continue
             console.log(note.name, "is an invalid note (no content)");
