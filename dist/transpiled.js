@@ -137,7 +137,10 @@ var SNTools = function () {
           var contentXmlString = xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue;
           var contentXml = this.loadXMLString(contentXmlString, "html");
           var contentHTML = contentXml.getElementsByTagName("en-note")[0].innerHTML;
-          contentHTML = contentHTML.replace(/<br[^>]*>/g, "\n\n");
+          if (stripHTML) {
+            contentHTML = contentHTML.replace(/<br[^>]*>/g, "\n\n");
+            contentHTML = contentHTML.replace(/<li[^>]*>/g, "\n");
+          }
           var text = stripHTML ? this.strip(contentHTML) : contentHTML;
 
           var note = {
