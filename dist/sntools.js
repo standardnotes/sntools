@@ -155,6 +155,8 @@ var SNTools = function () {
             }
           };
 
+          this.setClientUpdatedAt(note, note.updated_at);
+
           if (defaultTag) {
             defaultTag.content.references.push({
               content_type: "Note",
@@ -291,7 +293,7 @@ var SNTools = function () {
           // Try to find creation date, usually before div.content or div.title
           var date = this.getDateFromGKeepNote(true, note.content) || this.getDateFromGKeepNote(false, note.content) || new Date();
 
-          notes.push({
+          var noteResult = {
             created_at: date,
             updated_at: date,
             uuid: this.generateUUID(),
@@ -301,7 +303,10 @@ var SNTools = function () {
               text: content,
               references: []
             }
-          });
+          };
+
+          this.setClientUpdatedAt(noteResult, date);
+          notes.push(noteResult);
         }
       } catch (err) {
         _didIteratorError3 = true;
@@ -342,6 +347,15 @@ var SNTools = function () {
       return false;
     }
   }, {
+    key: 'setClientUpdatedAt',
+    value: function setClientUpdatedAt(item, date) {
+      item.content.appData = {
+        "org.standardnotes.sn": {
+          "client_updated_at": date
+        }
+      };
+    }
+  }, {
     key: 'convertPlaintextFiles',
     value: function convertPlaintextFiles(files, completion) {
       var index = 0;
@@ -366,6 +380,7 @@ var SNTools = function () {
               references: []
             }
           };
+          this.setClientUpdatedAt(note, note.updated_at);
           processedData.push(note);
 
           if (index < files.length) {
