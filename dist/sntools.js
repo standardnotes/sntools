@@ -361,13 +361,23 @@ var SNTools = function () {
       var index = 0;
       var processedData = [];
 
+      var dateString = new Date().toLocaleDateString().replace(/\//g, '-');
+      var defaultTag = {
+        uuid: this.generateUUID(),
+        content_type: "Tag",
+        content: {
+          title: dateString + '-import',
+          references: []
+        }
+      };
+      processedData.push(defaultTag);
+
       var readNext = function () {
         var file = files[index];
         index++;
         var reader = new FileReader();
 
         reader.onload = function (e) {
-
           var data = e.target.result;
           var note = {
             created_at: new Date(file.lastModified),
@@ -382,6 +392,10 @@ var SNTools = function () {
           };
           this.setClientUpdatedAt(note, note.updated_at);
           processedData.push(note);
+          defaultTag.content.references.push({
+            content_type: "Note",
+            uuid: note.uuid
+          });
 
           if (index < files.length) {
             readNext();
