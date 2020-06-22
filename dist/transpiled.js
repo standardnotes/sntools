@@ -1,6 +1,8 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -401,6 +403,80 @@ var SNTools = function () {
             readNext();
           } else {
             completion({ items: processedData });
+          }
+        }.bind(this);
+        reader.readAsText(file);
+      }.bind(this);
+
+      readNext();
+    }
+  }, {
+    key: 'convertSimplenoteFiles',
+    value: function convertSimplenoteFiles(files, completion) {
+      var index = 0;
+      var processedData = [];
+
+      var tags = new Map();
+
+      var readNext = function () {
+        var file = files[index];
+        index++;
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+          var _this = this;
+
+          var title = file.name.split(".")[0];
+
+          var data = e.target.result;
+          var tagsMarker = "\nTags:\n  ";
+
+          var _data$replaceAll$subs = data.replaceAll("\r\n", "\n").substring(title.concat("\n").length).split(tagsMarker),
+              _data$replaceAll$subs2 = _slicedToArray(_data$replaceAll$subs, 2),
+              newData = _data$replaceAll$subs2[0],
+              currentTags = _data$replaceAll$subs2[1];
+
+          currentTags = currentTags ? currentTags.split(", ") : [];
+
+          var note = {
+            created_at: new Date(file.lastModified),
+            updated_at: new Date(file.lastModified),
+            uuid: this.generateUUID(),
+            content_type: "Note",
+            content: {
+              title: title,
+              text: newData,
+              references: []
+            }
+          };
+          this.setClientUpdatedAt(note, note.updated_at);
+          processedData.push(note);
+
+          var noteReference = {
+            content_type: "Note",
+            uuid: note.uuid
+          };
+
+          currentTags.forEach(function (tag) {
+            if (!tags.has(tag)) {
+              tags.set(tag, {
+                uuid: _this.generateUUID(),
+                content_type: "Tag",
+                content: {
+                  title: tag,
+                  references: [noteReference]
+                }
+              });
+            } else {
+              tags.get(tag).content.references.push(noteReference);
+            }
+          });
+
+          if (index < files.length) {
+            readNext();
+          } else {
+            console.log(Array.from(tags.values()));
+            completion({ items: Array.from(tags.values()).concat(processedData) });
           }
         }.bind(this);
         reader.readAsText(file);
