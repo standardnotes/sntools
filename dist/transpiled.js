@@ -135,8 +135,37 @@ var SNTools = function () {
           var created = xmlNote.getElementsByTagName("created")[0].childNodes[0].nodeValue;
           var updatedNodes = xmlNote.getElementsByTagName("updated");
           var updated = updatedNodes.length ? updatedNodes[0].childNodes[0].nodeValue : null;
+          var contentNode = xmlNote.getElementsByTagName("content")[0];
+          var contentXmlString = void 0;
+          /** Find the node with the content */
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
-          var contentXmlString = xmlNote.getElementsByTagName("content")[0].childNodes[0].nodeValue;
+          try {
+            for (var _iterator2 = contentNode.childNodes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var node = _step2.value;
+
+              if (node instanceof CDATASection) {
+                contentXmlString = node.nodeValue;
+                break;
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
           var contentXml = this.loadXMLString(contentXmlString, "html");
           var contentHTML = contentXml.getElementsByTagName("en-note")[0].innerHTML;
           if (stripHTML) {
@@ -167,13 +196,13 @@ var SNTools = function () {
           }
 
           var xmlTags = xmlNote.getElementsByTagName("tag");
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator2 = xmlTags[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var tagXml = _step2.value;
+            for (var _iterator3 = xmlTags[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var tagXml = _step3.value;
 
               var tagName = tagXml.childNodes[0].nodeValue;
               var tag = findTag(tagName);
@@ -195,16 +224,16 @@ var SNTools = function () {
               tag.content.references.push({ content_type: note.content_type, uuid: note.uuid });
             }
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                _iterator2.return();
+              if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                _iterator3.return();
               }
             } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -245,13 +274,13 @@ var SNTools = function () {
       // Final notes array
       var notes = [];
 
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator3 = rawNotes[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var note = _step3.value;
+        for (var _iterator4 = rawNotes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var note = _step4.value;
 
           // Parse note html
           var el = document.createElement('html');
@@ -311,16 +340,16 @@ var SNTools = function () {
           notes.push(noteResult);
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3.return) {
-            _iterator3.return();
+          if (!_iteratorNormalCompletion4 && _iterator4.return) {
+            _iterator4.return();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
