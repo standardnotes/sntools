@@ -282,6 +282,12 @@ var SNTools = function () {
         for (var _iterator4 = rawNotes[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           var note = _step4.value;
 
+          var jsonNoteContent = this.parseJsonGKeepNote(note.content);
+          if (jsonNoteContent) {
+            notes.push(jsonNoteContent);
+            continue;
+          }
+
           // Parse note html
           var el = document.createElement('html');
           el.innerHTML = note.content;
@@ -376,6 +382,35 @@ var SNTools = function () {
         }
       }
       return false;
+    }
+  }, {
+    key: 'parseJsonGKeepNote',
+    value: function parseJsonGKeepNote(content) {
+      try {
+        var parsed = JSON.parse(content);
+        var date = new Date(parsed.userEditedTimestampUsec / 1000);
+        return {
+          created_at: date,
+          updated_at: date,
+          uuid: this.generateUUID(),
+          content_type: 'Note',
+          content: {
+            title: parsed.title,
+            text: parsed.textContent,
+            references: [],
+            appData: {
+              "org.standardnotes.sn": {
+                "client_updated_at": date,
+                archived: Boolean(parsed.isArchived),
+                trashed: Boolean(parsed.isTrashed),
+                pinned: Boolean(parsed.isPinned)
+              }
+            }
+          }
+        };
+      } catch (e) {
+        return null;
+      }
     }
   }, {
     key: 'setClientUpdatedAt',
