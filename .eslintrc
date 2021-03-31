@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "@standardnotes/eslint-config-extensions"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 11
+  }
+}
