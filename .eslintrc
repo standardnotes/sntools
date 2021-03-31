@@ -8,5 +8,9 @@
   ],
   "parserOptions": {
     "ecmaVersion": 11
+  },
+  "globals": {
+    "ActiveXObject": true,
+    "CDATASection": true
   }
 }
