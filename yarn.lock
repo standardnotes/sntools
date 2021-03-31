@@ -892,10 +892,10 @@
     readdirp "^2.2.1"
     upath "^1.1.1"
 
-"@standardnotes/eslint-config-extensions@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@standardnotes/eslint-config-extensions/-/eslint-config-extensions-1.0.2.tgz#50a8596e0f0f2207e5a54815547aadfb1025a856"
-  integrity sha512-O8L0+LaSKPzOKYLFOk9mKQP38siUjoRwKUdqyxU5veWVSQb1eUx4X1mUs9cwFH9nswl5oJeOGWwRatT3FUXX1A==
+"@standardnotes/eslint-config-extensions@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@standardnotes/eslint-config-extensions/-/eslint-config-extensions-1.0.3.tgz#0bef8acb4cecd5617210200ef63f43cae385f135"
+  integrity sha512-7nQ+tZ4sMyVlPML2naD/lFmM/Ryfdx7wxUDKjCmP2YVooxjpgPzhhJ7edAHpNScpyRtt/BPK5SoeW0UqJJxsXA==
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"

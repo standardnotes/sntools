@@ -19,7 +19,7 @@
     "@babel/cli": "^7.13.14",
     "@babel/core": "^7.13.14",
     "@babel/preset-env": "^7.13.12",
-    "@standardnotes/eslint-config-extensions": "^1.0.2",
+    "@standardnotes/eslint-config-extensions": "^1.0.3",
     "eslint": "^7.23.0",
     "moment": "^2.24.0",
     "terser-webpack-plugin": "^5.1.1",
