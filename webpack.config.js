@@ -1,3 +1,4 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 module.exports = {
@@ -16,19 +17,15 @@ module.exports = {
     rules: [
       {
         exclude: /node_modules/,
-        test: /\.(ts)?$/,
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              cacheDirectory: true,
-              presets: [
-                ["@babel/preset-env"]
-              ]
-            }
-          }
-        ]
+        test: /\.(js)?$/,
+        loader: "babel-loader"
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html',
+      chunks: ['sntools']
+    })
+  ]
 };

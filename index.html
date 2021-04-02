@@ -11,7 +11,6 @@
         color: white;
       }
     </style>
-    <script type="text/javascript" src="dist/sntools.js"></script>
   </head>
 
   <body>
@@ -28,31 +27,30 @@
     Simplenote:
     <input type="file" id="simplenote" name="files[]" multiple />
 
-    <script>
+    <script type="text/javascript">
       function handleEvernoteSelect(evt) {
-        var file = evt.target.files[0];
-        var reader = new FileReader();
+        const file = evt.target.files[0];
+        const reader = new FileReader();
 
         reader.onload = function (e) {
-          var data = e.target.result;
-          var stripHTML = true;
-          var result = SNTools.convertENEXDatatoSN(data, stripHTML);
+          const data = e.target.result;
+          const result = SNTools.convertENEXDatatoSN(data, true);
           SNTools.downloadSNData(result, "result.txt");
-        }.bind(this)
+        }.bind(this);
 
         reader.readAsText(file);
       }
 
       function handleKeepSelect(evt) {
-        var files = evt.target.files;
-        var reader = new FileReader();
+        const files = evt.target.files;
+        const reader = new FileReader();
 
         // Raw notes from Google Keep files
-        var notes = [];
+        let notes = [];
 
         // Read files one by one
         for (let i = 0, f; f = files[i]; i++) {
-          var r = new FileReader();
+          const r = new FileReader();
           r.onload = (function (f) {
             return function (e) {
               const content = e.target.result;
@@ -69,28 +67,28 @@
         }
 
         // Wait for loading of note files to complete
-        var fileLoading = setInterval(() => {
+        const fileLoading = setInterval(() => {
           if (notes.length >= files.length) {
             // All files have been read, convert
             clearInterval(fileLoading);
-            var result = SNTools.convertGKeepNotes(notes);
+            const result = SNTools.convertGKeepNotes(notes);
             SNTools.downloadSNData(result, "standardnotes-archive.json");
           }
-        }, 0)
+        }, 0);
       }
 
       function handlePlaintextSelect(evt) {
-        var files = evt.target.files;
+        const files = evt.target.files;
         SNTools.convertPlaintextFiles(files, function (data) {
           SNTools.downloadSNData(data, "sn-import-file.txt");
-        })
+        });
       }
 
       function handleSimplenoteSelect(evt) {
-        var files = evt.target.files;
+        const files = evt.target.files;
         SNTools.convertSimplenoteFiles(files, function (data) {
           SNTools.downloadSNData(data, "sn-import-file.txt");
-        })
+        });
       }
 
       document.getElementById('evernote').addEventListener('change', handleEvernoteSelect, false);

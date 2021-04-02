@@ -10,6 +10,8 @@ module.exports = merge(config, {
   devServer: {
     port: 8001,
     historyApiFallback: true,
+    contentBase: path.join(__dirname),
+    watchContentBase: true,
     watchOptions: { aggregateTimeout: 800, poll: 1000 },
   }
 });
