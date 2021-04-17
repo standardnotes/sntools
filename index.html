@@ -86,9 +86,38 @@
 
       function handleSimplenoteSelect(evt) {
         const files = evt.target.files;
-        SNTools.convertSimplenoteFiles(files, function (data) {
-          SNTools.downloadSNData(data, "sn-import-file.txt");
-        });
+        const reader = new FileReader();
+
+        // Raw notes from Simplenote files
+        let notes = [];
+
+        // Read files one by one
+        for (let i = 0, f; f = files[i]; i++) {
+          const r = new FileReader();
+          r.onload = (function (f) {
+            return function (e) {
+              const content = e.target.result;
+
+              // Add note to notes array
+              notes.push({
+                content,
+                name: f.name.replace(/\.txt$/, '')
+              });
+            };
+          })(f);
+
+          r.readAsText(f);
+        }
+
+        // Wait for loading of note files to complete
+        const fileLoading = setInterval(() => {
+          if (notes.length >= files.length) {
+            // All files have been read, convert
+            clearInterval(fileLoading);
+            const result = SNTools.convertSimplenoteFiles(notes);
+            SNTools.downloadSNData(result, "sn-import-file.txt");
+          }
+        }, 0);
       }
 
       document.getElementById('evernote').addEventListener('change', handleEvernoteSelect, false);
