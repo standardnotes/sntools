@@ -351,9 +351,10 @@ class SNTools {
     const dateString = regex.exec(note); // Check if string exists at all
 
     if (dateString && dateString[0]) {
-      // Check if string is valid date
-      if (!isNaN(new Date(dateString))) {
-        return new Date(dateString);
+      const parsedDate = dayjs.utc(dateString).toDate(); // Check if string is valid date
+
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate;
       }
     }
 
@@ -363,7 +364,7 @@ class SNTools {
   parseJsonGKeepNote(content) {
     try {
       const parsed = JSON.parse(content);
-      const date = new Date(parsed.userEditedTimestampUsec / 1000);
+      const date = dayjs(parsed.userEditedTimestampUsec / 1000).toDate();
       return {
         created_at: date,
         updated_at: date,
