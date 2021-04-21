@@ -197,8 +197,9 @@ class SNTools {
       let contentHTML = contentXml.getElementsByTagName('en-note')[0].innerHTML;
 
       if (stripHTML) {
-        contentHTML = contentHTML.replace(/<br[^>]*>/g, '\n\n');
+        contentHTML = contentHTML.replace(/<\/div>/g, '</div>\n');
         contentHTML = contentHTML.replace(/<li[^>]*>/g, '\n');
+        contentHTML = contentHTML.trim();
       }
 
       const text = stripHTML ? this.strip(contentHTML) : contentHTML;
@@ -291,7 +292,7 @@ class SNTools {
         contentElement.innerHTML = contentElement.innerHTML.replace(/<br>/g, '\n'); // Get note content, removing newline from todo lists
 
         if (stripHTML) {
-          content = contentElement.innerHTML.replace(/☐\n/g, '☐').replace(/☑\n/g, '☑');
+          content = contentElement.textContent;
         } else {
           content = contentElement.innerHTML;
         }
