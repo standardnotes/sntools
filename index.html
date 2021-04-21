@@ -15,17 +15,30 @@
 
   <body>
 
-    Evernote:
-    <input type="file" id="evernote" name="files[]" multiple />
-
-    Google Keep from Google Takeout archive:
-    <input type="file" id="keep" name="files[]" multiple />
-
-    Plaintext:
-    <input type="file" id="plaintext" name="files[]" multiple />
-
-    Simplenote:
-    <input type="file" id="simplenote" name="files[]" multiple />
+    <table>
+      <tbody>
+        <tr>
+          <td>Evernote:</td>
+          <td><input type="file" id="evernote" name="files[]" multiple /></td>
+          <td><input type="checkbox" id="evernote_strip_html" checked>Strip HTML?</input></td>
+        </tr>
+        <tr>
+          <td>Google Keep:</td>
+          <td><input type="file" id="keep" name="files[]" multiple /></td>
+          <td><input type="checkbox" id="gkeep_strip_html" checked>Strip HTML?</input></td>
+        </tr>
+        <tr>
+          <td>Plaintext:</td>
+          <td><input type="file" id="plaintext" name="files[]" multiple /></td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td>Simplenote:</td>
+          <td><input type="file" id="simplenote" name="files[]" multiple /></td>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
 
     <script type="text/javascript">
       function handleEvernoteSelect(evt) {
@@ -34,7 +47,8 @@
 
         reader.onload = function (e) {
           const data = e.target.result;
-          const result = SNTools.convertENEXDatatoSN(data, true);
+          const stripHTML = document.getElementById("evernote_strip_html").checked;
+          const result = SNTools.convertENEXDatatoSN(data, stripHTML);
           SNTools.downloadSNData(result, "result.txt");
         }.bind(this);
 
@@ -71,7 +85,8 @@
           if (notes.length >= files.length) {
             // All files have been read, convert
             clearInterval(fileLoading);
-            const result = SNTools.convertGKeepNotes(notes);
+            const stripHTML = document.getElementById("gkeep_strip_html").checked;
+            const result = SNTools.convertGKeepNotes(notes, stripHTML);
             SNTools.downloadSNData(result, "standardnotes-archive.json");
           }
         }, 0);
@@ -86,9 +101,38 @@
 
       function handleSimplenoteSelect(evt) {
         const files = evt.target.files;
-        SNTools.convertSimplenoteFiles(files, function (data) {
-          SNTools.downloadSNData(data, "sn-import-file.txt");
-        });
+        const reader = new FileReader();
+
+        // Raw notes from Simplenote files
+        let notes = [];
+
+        // Read files one by one
+        for (let i = 0, f; f = files[i]; i++) {
+          const r = new FileReader();
+          r.onload = (function (f) {
+            return function (e) {
+              const content = e.target.result;
+
+              // Add note to notes array
+              notes.push({
+                content,
+                name: f.name.replace(/\.txt$/, '')
+              });
+            };
+          })(f);
+
+          r.readAsText(f);
+        }
+
+        // Wait for loading of note files to complete
+        const fileLoading = setInterval(() => {
+          if (notes.length >= files.length) {
+            // All files have been read, convert
+            clearInterval(fileLoading);
+            const result = SNTools.convertSimplenoteFiles(notes);
+            SNTools.downloadSNData(result, "sn-import-file.txt");
+          }
+        }, 0);
       }
 
       document.getElementById('evernote').addEventListener('change', handleEvernoteSelect, false);
