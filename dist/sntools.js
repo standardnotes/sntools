@@ -152,8 +152,8 @@ class SNTools {
   convertENEXDatatoSN(data, stripHTML = false, defaultTagName = 'evernote') {
     const xmlDoc = this.loadXMLString(data, 'xml');
     const xmlNotes = xmlDoc.getElementsByTagName('note');
-    let notes = [];
-    let tags = [];
+    const notes = [];
+    const tags = [];
     let defaultTag;
 
     if (defaultTagName) {
@@ -177,11 +177,11 @@ class SNTools {
       tags.push(tag);
     }
 
-    for (const xmlNote of xmlNotes) {
-      const title = xmlNote.getElementsByTagName('title')[0].childNodes[0].nodeValue;
-      const created = xmlNote.getElementsByTagName('created')[0].childNodes[0].nodeValue;
+    for (const [index, xmlNote] of [...xmlNotes].entries()) {
+      const title = xmlNote.getElementsByTagName('title')[0].textContent;
+      const created = xmlNote.getElementsByTagName('created')[0].textContent;
       const updatedNodes = xmlNote.getElementsByTagName('updated');
-      const updated = updatedNodes.length ? updatedNodes[0].childNodes[0].nodeValue : null;
+      const updated = updatedNodes.length ? updatedNodes[0].textContent : null;
       const contentNode = xmlNote.getElementsByTagName('content')[0];
       let contentXmlString;
       /** Find the node with the content */
@@ -209,7 +209,7 @@ class SNTools {
         uuid: this.generateUUID(),
         content_type: 'Note',
         content: {
-          title,
+          title: !title ? `Imported note ${index + 1} from ENote` : title,
           text,
           references: []
         }
@@ -269,14 +269,13 @@ class SNTools {
   }
 
   convertGKeepNotes(rawNotes, stripHTML = false) {
-    // Final notes array
-    let notes = [];
+    const finalNotes = [];
 
-    for (const note of rawNotes) {
+    for (const [index, note] of rawNotes.entries()) {
       const jsonNoteContent = this.parseJsonGKeepNote(note.content);
 
       if (jsonNoteContent) {
-        notes.push(jsonNoteContent);
+        finalNotes.push(jsonNoteContent);
         continue;
       } // Parse note html
 
@@ -306,7 +305,7 @@ class SNTools {
       let title;
 
       try {
-        title = element.getElementsByClassName('title')[0].innerHTML;
+        title = element.getElementsByClassName('title')[0].textContent;
       } catch (e) {
         // Invalid note, continue
         console.log(note.name, 'is an invalid note (no title)');
@@ -315,6 +314,11 @@ class SNTools {
 
 
       const date = this.getDateFromGKeepNote(true, note.content) || this.getDateFromGKeepNote(false, note.content) || new Date();
+
+      if (!title) {
+        title = `Imported note ${index + 1} from GKeep`;
+      }
+
       const noteResult = {
         created_at: date,
         updated_at: date,
@@ -327,11 +331,11 @@ class SNTools {
         }
       };
       this.setClientUpdatedAt(noteResult, date);
-      notes.push(noteResult);
+      finalNotes.push(noteResult);
     }
 
     return {
-      'items': notes
+      'items': finalNotes
     };
   }
 
@@ -394,7 +398,7 @@ class SNTools {
 
   convertPlaintextFiles(files, completion) {
     let index = 0;
-    let processedData = [];
+    const processedData = [];
     const dateString = new Date().toLocaleDateString().replace(/\//g, '-');
     const defaultTag = {
       uuid: this.generateUUID(),
@@ -447,20 +451,19 @@ class SNTools {
   }
 
   convertSimplenoteFiles(rawNotes) {
-    // Final notes array
-    let notes = [];
+    const finalNotes = [];
 
     for (const note of rawNotes) {
       const jsonNoteContent = this.parseJsonSimplenote(note);
 
       if (jsonNoteContent) {
-        notes.push(...jsonNoteContent);
+        finalNotes.push(...jsonNoteContent);
         continue;
       }
     }
 
     return {
-      'items': notes
+      'items': finalNotes
     };
   }
 
