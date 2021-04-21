@@ -11,6 +11,7 @@ module.exports = {
     'text',
     'html'
   ],
+  globalSetup: '<rootDir>/test/globalSetup.js',
   testMatch: [
     '**/?(*.)(spec|test).js'
   ],
