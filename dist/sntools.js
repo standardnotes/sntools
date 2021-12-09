@@ -7,7 +7,7 @@
 		exports["SNTools"] = factory();
 	else
 		root["SNTools"] = factory();
-})(self, function() {
+})(this, function() {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 

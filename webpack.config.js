@@ -14,7 +14,8 @@ module.exports = {
     library: 'SNTools',
     libraryTarget: 'umd',
     umdNamedDefine: true,
-    publicPath: '/dist/'
+    publicPath: '/dist/',
+    globalObject: 'this',
   },
   module: {
     rules: [
