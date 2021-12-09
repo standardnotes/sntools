@@ -3,15 +3,18 @@ const path = require('path');
 
 module.exports = {
   entry: {
-    'sntools': './lib/sntools.js',
-    'sntools.min': './lib/sntools.js',
+    'sntools.js': './lib/sntools.js'
   },
   resolve: {
     extensions: ['.js']
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js'
+    filename: './[name]',
+    library: 'SNTools',
+    libraryTarget: 'umd',
+    umdNamedDefine: true,
+    publicPath: '/dist/'
   },
   module: {
     rules: [
