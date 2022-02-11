@@ -252,7 +252,7 @@ class Tools {
         uuid: this.generateUUID(),
         content_type: 'Note',
         content: {
-          title: !title ? `Imported note ${index + 1} from ENote` : title,
+          title: !title ? `Imported note ${index + 1} from Evernote` : title,
           text,
           references: []
         }
@@ -315,6 +315,8 @@ class Tools {
     const finalNotes = [];
 
     for (const [index, note] of rawNotes.entries()) {
+      var _element$getElementsB;
+
       const jsonNoteContent = this.parseJsonGKeepNote(note.content);
 
       if (jsonNoteContent) {
@@ -342,26 +344,16 @@ class Tools {
         // Invalid note, continue
         console.log(note.name, 'is an invalid note (no content)');
         continue;
-      } // Try to get note title
+      }
 
+      let title = (_element$getElementsB = element.getElementsByClassName('title')[0]) === null || _element$getElementsB === void 0 ? void 0 : _element$getElementsB.textContent;
 
-      let title;
-
-      try {
-        title = element.getElementsByClassName('title')[0].textContent;
-      } catch (e) {
-        // Invalid note, continue
-        console.log(note.name, 'is an invalid note (no title)');
-        continue;
+      if (!title) {
+        title = `Imported note ${index + 1} from Google Keep`;
       } // Try to find creation date, usually before div.content or div.title
 
 
       const date = this.getDateFromGKeepNote(true, note.content) || this.getDateFromGKeepNote(false, note.content) || new Date();
-
-      if (!title) {
-        title = `Imported note ${index + 1} from GKeep`;
-      }
-
       const noteResult = {
         created_at: date,
         updated_at: date,
