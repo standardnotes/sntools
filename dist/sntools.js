@@ -486,6 +486,59 @@ class Tools {
     readNext();
   }
 
+  convertAegisFile(file) {
+    const processedData = [];
+    const dateString = new Date().toLocaleDateString().replace(/\//g, "-");
+    const defaultTag = {
+      uuid: this.generateUUID(),
+      content_type: "Tag",
+      content: {
+        title: `${dateString}-import`,
+        references: []
+      }
+    };
+    processedData.push(defaultTag);
+    const data = this.parseJsonAegis(file.content);
+    const note = {
+      created_at: new Date(file.lastModified),
+      updated_at: new Date(file.lastModified),
+      uuid: this.generateUUID(),
+      content_type: "Note",
+      content: {
+        title: file.name.split(".")[0],
+        text: data,
+        references: []
+      }
+    };
+    this.setClientUpdatedAt(note, note.updated_at);
+    processedData.push(note);
+    defaultTag.content.references.push({
+      content_type: "Note",
+      uuid: note.uuid
+    });
+    return {
+      items: processedData
+    };
+  }
+
+  parseJsonAegis(file) {
+    try {
+      const json = JSON.parse(file);
+      const entries = json.db.entries.map(entry => {
+        return {
+          service: entry.issuer,
+          account: entry.name,
+          secret: entry.info.secret,
+          notes: entry.note
+        };
+      });
+      return JSON.stringify(entries);
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
   convertSimplenoteFiles(rawNotes) {
     const finalNotes = [];
 
