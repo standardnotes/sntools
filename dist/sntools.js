@@ -109,6 +109,20 @@ dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 const dateFormat = 'YYYYMMDDTHHmmss';
 class Tools {
+  /** 
+   * Remove the extension of the filename, leaving just the filename.
+   * 
+   * This is done by finding the last section of the filename and removing it,
+   * assuming that the last section means everything after and including the 
+   * last period.
+   * 
+   * @input String fileName the filename, including extension
+   * @return String the filename without the extension
+   **/
+  getNoteTitle(fileName) {
+    return fileName.replace(/\.[^/.]+$/, "");
+  }
+
   generateUUID() {
     const crypto = window.crypto || window.msCrypto;
 
@@ -459,7 +473,7 @@ class Tools {
           uuid: this.generateUUID(),
           content_type: 'Note',
           content: {
-            title: file.name.split('.')[0],
+            title: this.getNoteTitle(file.name),
             text: data,
             references: []
           }
@@ -505,7 +519,7 @@ class Tools {
       uuid: this.generateUUID(),
       content_type: "Note",
       content: {
-        title: file.name.split(".")[0],
+        title: this.getNoteTitle(file.name),
         text: data,
         references: []
       }
